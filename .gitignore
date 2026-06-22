@@ -1,0 +1,10 @@
+# KiCad and local workspace clutter
+#auto_saved_files#
+_autosave-*.kicad_*
+~*.lck
+*.rpt
+*.csv
+bom/
+fp-info-cache
+.vscode/
+My LED controller-backups/
