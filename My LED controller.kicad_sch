@@ -18151,6 +18151,16 @@
 		)
 		(uuid "663764e9-cc54-4f77-9b91-1d9f48764407")
 	)
+	(text "LED STRIP POWER MUST BE INJECTED EXTERNALLY\nDO NOT SOURCE STRIP CURRENT THROUGH THIS BOARD"
+		(exclude_from_sim no)
+		(at 214.63 25.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "f6f9d312-8a81-4f33-bc55-2f121f7a7d61")
+	)
 	(text "Level Shifter\n"
 		(exclude_from_sim no)
 		(at 186.182 79.756 0)
@@ -21075,6 +21085,88 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "3Y"
+		(shape input)
+		(at 187.96 68.58 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "2b20e855-af5f-4748-b667-dc4bf2f8ab0e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 187.96 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape input)
+		(at 187.96 66.04 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "0ec8b03b-eb41-4297-8553-74099885f6d8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 187.96 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "4Y"
+		(shape input)
+		(at 200.66 68.58 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "8a809ba4-fce9-4cf4-85bd-6ecfd4ec5c8e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 200.66 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+5V_CTRL"
+		(shape input)
+		(at 200.66 66.04 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "01de5c3b-58f8-4e1f-82fb-d8d1d0c33155")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 213.019 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -26486,6 +26578,89 @@
 			(project "My LED controller"
 				(path "/00777be0-2c66-4893-8910-2bcda97b7c36"
 					(reference "J2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_02x02_Odd_Even")
+		(at 193.04 68.58 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a1e5f5f9-6a48-4fa2-9f9b-2b9f5f0586f4")
+		(property "Reference" "J4"
+			(at 194.31 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SPARE_OUT_HDR"
+			(at 194.31 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x02_P2.54mm_Vertical_SMD"
+			(at 193.04 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~https://www.lcsc.com/datasheet/C42163080.pdf?spm=wm.sxq.inf.ggs___wm.fly.bg.4.xh&lcsc_vid=RlhYUFQHTlkIAlRTQQQMVwYCQQNeBlcDQQIMXlRfE1cxVlNeR1VZUFNQRFJfVTsOAxUeFF5JWBYZEEoKFBINSQcJGk4eFQsCAgIaSgADAwAHC0slQ1ZdUlFQQlZADxALGw%3D%3D"
+			(at 193.04 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "CONN HEADER 4POS 2.54mm DUAL ROW SMD"
+			(at 193.04 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C42163080"
+			(at 193.04 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "4"
+			(uuid "ba6f4faa-247f-4f56-a4c2-d08611ec86e0")
+		)
+		(pin "3"
+			(uuid "a1c6944d-41b4-4bd8-a408-70d5aa7593f3")
+		)
+		(pin "2"
+			(uuid "47f5df6e-112f-4db5-9253-6b982f9e1317")
+		)
+		(pin "1"
+			(uuid "9efed6d1-3831-4d81-83fe-3f6f7f9ea4f3")
+		)
+		(instances
+			(project "My LED controller"
+				(path "/00777be0-2c66-4893-8910-2bcda97b7c36"
+					(reference "J4")
 					(unit 1)
 				)
 			)
