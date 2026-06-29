@@ -43,6 +43,9 @@ Status values: Open, In Progress, Blocked, Done, Deferred.
 | RB-008 | Hardware decision | Dedicated level shift for onboard LEDs | Nice | Open | RB-003 routing review | SI review outcome documented | Possible margin loss in noisy scenarios |
 | RB-009 | WLED optimization | Add clear silkscreen labels for WLED setup points (GPIO18 data, GND, 5V, current target note) | Must | Open | RB-006 | Setup can be completed from silkscreen + docs | Higher setup error rate |
 | RB-010 | Documentation | Add concise WLED setup instructions to docs and board labels | Must | Open | RB-009 | New user can configure WLED without guesswork | Slower bring-up and support overhead |
+| RB-011 | Pre-route schematic gate | Resolve or explicitly waive GPIO33 ERC input-not-driven finding on Rev B mic path | Must | Open | None | Rev B ERC shows 0 errors or documented waiver accepted | Routing starts with unresolved electrical intent |
+| RB-012 | Pre-route hardware decision | Lock Rev B microphone VDD rail decision (+5V_CTRL or +3.3V) and apply schematic update if required | Must | Open | RB-011 | Schematic and netlist match chosen rail and rationale recorded | Risk of mic supply incompatibility or rework |
+| RB-013 | Pre-route documentation consistency | Reconcile mic net naming and optional or DNI documentation with implemented U2 module wiring | Must | Open | RB-012 | Handoff, checklist, and schematic notes match implementation | Build ambiguity and bring-up confusion |
 
 ## WLED-First Board Guidance (Working)
 - Keep external strip data path aligned with current known-good GPIO18 unless routing forces change.
@@ -68,6 +71,7 @@ Use this section to record decisions that freeze scope.
 | Date | Summary |
 |---|---|
 | 2026-06-24 | Initialized living Rev B tracker with known baseline and newly requested changes. |
+| 2026-06-29 | Added explicit pre-route gate items RB-011 through RB-013 for Rev B mic/ERC closeout before routing. |
 
 ## Update Rules
 When adding or changing an item:

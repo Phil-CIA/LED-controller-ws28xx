@@ -141,3 +141,28 @@ This session finalized repository synchronization and Rev B tracking publication
 ### Ongoing process
 - Keep `REV_B_CHANGE_TRACKER.md` as the authoritative living change register for Rev B.
 - Update `HANDOFF.md` at each session close with what changed, what was validated, and the latest commit reference.
+
+## Session closeout (2026-06-29, Rev B pre-route handoff)
+
+This closeout completes repository sync and publishes the Rev B baseline artifacts needed before board routing.
+
+### What was completed
+- Created a safety snapshot branch before sync: `wip/pre-sync-2026-06-29` at `80bd3fa`.
+- Fast-forward synced local `main` to remote `origin/main`.
+- Imported Rev B design and pre-fab artifacts into `main` and pushed to GitHub.
+- Added merged direction plan for pre-route execution in `REV_B_MERGED_DIRECTION_2026-06-29.md`.
+
+### Latest GitHub state
+- Branch: `main`
+- Current head at closeout: `0191824`
+- Closeout commit: `0191824` Add Rev B design baseline and prefab mic closeout artifacts
+
+### Rev B pre-route gate (must finish before routing)
+1. Resolve or explicitly waive the GPIO33 ERC input-not-driven finding.
+2. Lock microphone VDD decision (+5V_CTRL only if confirmed safe; else move to +3.3V).
+3. Reconcile mic net naming/docs mismatch and ensure optional or DNI intent is explicit.
+4. Re-run Rev B ERC and DRC with reports saved as new revision artifacts.
+
+### Start-next-session focus
+- Execute the pre-route gate items above first.
+- After gate pass, begin RB-001 and RB-007 implementation before broader reroute work.

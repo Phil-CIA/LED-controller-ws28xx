@@ -1,12 +1,12 @@
-# Next Chat Quick Start - PCB Change Categorization
+# Next Chat Quick Start - Rev B Pre-Route Execution
 
 Primary tracker document: `REV_B_CHANGE_TRACKER.md` (living document, continuously updated)
 
 ## Goal for next chat
-Organize all PCB findings and firmware updates into clear change categories for the next board revision and implementation cycle.
+Complete the Rev B schematic pre-route gate, then start the first must-have board changes.
 
 ## Paste this at the start of the next chat
-Use this workspace to categorize PCB changes and produce a Rev B action plan.
+Use this workspace to execute Rev B pre-route gates first, then begin layout must-haves.
 
 Known validated state:
 - PCB target identity locked and guarded upload working on COM6
@@ -15,61 +15,46 @@ Known validated state:
 - AHT20 validated on I2C: SDA GPIO21, SCL GPIO22, device at address 0x38
 - Switches currently unreliable due to hardware biasing limits on GPIO34/35/36/39
 
-Please categorize changes into:
-1. Hardware schematic changes
-2. PCB layout changes
-3. Firmware changes
-4. Manufacturing and assembly changes
-5. Test and validation changes
-6. Documentation updates
+Pre-route findings already identified:
+- Rev B mic path is implemented as U2 INMP441 with Set A GPIO mapping.
+- One true ERC blocker remains on GPIO33 (input-not-driven).
+- Mic VDD decision is still open (+5V_CTRL vs +3.3V).
+- Mic naming/docs mismatch is still open.
 
-Then produce:
-- Rev B must-have changes
-- Rev B nice-to-have changes
-- Risks if deferred
-- Verification checklist per change category
+Please execute in this order:
+1. Close the GPIO33 ERC blocker (fix or explicit waiver with rationale).
+2. Lock mic VDD rail decision and apply schematic update if needed.
+3. Resolve mic naming/docs mismatch and ensure optional or DNI intent is explicit.
+4. Regenerate Rev B ERC and DRC artifacts.
+5. If gate passes, start RB-001 and RB-007 before broader reroute.
+
+Then update:
+- REV_B_CHANGE_TRACKER status fields for completed pre-route items.
+- HANDOFF with exact decisions and artifact filenames.
 
 ## Current source of truth
 - HANDOFF: HANDOFF.md
+- Pre-route execution plan: REV_B_MERGED_DIRECTION_2026-06-29.md
+- Rev B prefab checklist: Rev B/PREFAB_SCHEMATIC_CHECKLIST_2026-06-29.md
 - Main firmware: src/main.cpp
 - Build config and pins: platformio.ini
 - Guarded flash flow: scripts/guarded-flash.ps1
 - Target identity config: scripts/flash-targets.json
 
-## Suggested categorization baseline
-
-### 1) Hardware schematic changes
-- Add external pull resistors for switch lines on GPIO34/35/36/39
-- Confirm switch topology (recommended active-low: pull-up to 3.3V, button to GND)
-- Preserve validated I2C wiring for AHT20 (SDA21/SCL22)
-
-### 2) PCB layout changes
-- Route and place switch pull networks near MCU input pins
-- Keep proven LED data routing assumptions (GPIO18 external, GPIO19 onboard)
-- Keep I2C trace integrity and pull-up strategy consistent with validated behavior
-
-### 3) Firmware changes
-- Keep dual-LED support and diagnostics commands
-- Keep I2C scan and AHT20 read commands
-- Keep switch logging logic, but expect true reliability only after hardware pull network is added
-
-### 4) Manufacturing and assembly changes
-- Include resistor values and references in BOM for switch biasing
-- Add assembly notes for any trace/jumper ECOs discovered during bring-up
-
-### 5) Test and validation changes
-- Required bench test sequence:
-  - guarded upload precheck pass
-  - i2cscan finds 0x38
-  - aht20 returns plausible readings
-  - switch press logging confirms each switch
-  - onboard and external LED functional tests
-
-### 6) Documentation updates
-- Update README Rev B section after schematic/layout freeze
-- Update HANDOFF with final Rev B decisions and acceptance criteria
+## First implementation block (after pre-route gate)
+### Hardware and layout must-haves
+- RB-001: add external pull-up network for switch lines GPIO34/35/36/39.
+- RB-007: correct onboard LED serial chain first-LED orientation (DIN path).
+- RB-002: route and place switch pull network near MCU pins.
+- RB-003/RB-005: onboard LED section and R16 relocation work.
 
 ## Fast command reference
+- KiCad ERC (Rev B schematic):
+  C:/Users/forch/AppData/Local/Programs/KiCad/9.0/bin/kicad-cli.exe sch erc "c:/Users/forch/GitHub/LED-controller-ws28xx/Rev B/My LED controller Rev B.kicad_sch" --output "c:/Users/forch/GitHub/LED-controller-ws28xx/Rev B/ERC_NEXT_SESSION_YYYY-MM-DD.rpt"
+
+- KiCad DRC (Rev B PCB):
+  C:/Users/forch/AppData/Local/Programs/KiCad/9.0/bin/kicad-cli.exe pcb drc "c:/Users/forch/GitHub/LED-controller-ws28xx/Rev B/My LED controller Rev B.kicad_pcb" --output "c:/Users/forch/GitHub/LED-controller-ws28xx/Rev B/DRC_NEXT_SESSION_YYYY-MM-DD.rpt"
+
 - Build PCB firmware:
   powershell -ExecutionPolicy Bypass -File scripts/guarded-flash.ps1 -Action build -TargetName pcb
 
