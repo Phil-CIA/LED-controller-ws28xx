@@ -8,3 +8,12 @@ bom/
 fp-info-cache
 .vscode/
 My LED controller-backups/
+
+# PlatformIO/build artifacts
+.pio/
+
+# Temporary flash/header files
+tmp_*.bin
+
+# Firmware release binaries (keep out of source control by default)
+WLED_*.bin

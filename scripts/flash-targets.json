@@ -1,0 +1,19 @@
+﻿{
+    "activeTarget":  "breadboard",
+    "targets":  {
+                    "breadboard":  {
+                                       "description":  "Breadboard bring-up unit",
+                                       "port":  "COM5",
+                                       "chip":  "ESP32",
+                                       "expectedMac":  "14:33:5C:2F:27:C4",
+                                       "platformioEnv":  "esp32_led_breadboard"
+                                   },
+                    "pcb":  {
+                                "description":  "PCB production unit",
+                                "port":  "COM6",
+                                "chip":  "ESP32",
+                                "expectedMac":  "6C:C8:40:06:EE:54",
+                                "platformioEnv":  "esp32_led_pcb"
+                            }
+                }
+}
