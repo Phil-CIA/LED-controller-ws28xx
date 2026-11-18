@@ -2,6 +2,11 @@
 
 Standalone ESP32 + WS281x project.
 
+For the current WLED-based Rev B direction and reported board pinout, see
+[`WLED_REV_B_PLAN.md`](WLED_REV_B_PLAN.md). The hardware and firmware settings
+below describe the earlier bring-up configuration and may differ from the
+working board.
+
 This repo now supports two firmware paths:
 - custom firmware in `src/main.cpp` (serial-driven tests and demo)
 - official WLED firmware (Wi-Fi + WLED app control)
