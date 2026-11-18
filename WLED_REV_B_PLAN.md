@@ -22,9 +22,39 @@ Reported by the owner from the running WLED device:
 
 The owner wants the onboard indicators to remain active when the main LEDs
 are off: D1 for controller power, D2 for Wi-Fi, and D3 for a general fault or
-warning. D3's specific triggers and indicator colors are not yet decided.
+warning. D3 should indicate a missing or failed temperature sensor; indicator
+colors are not yet decided. The owner confirmed the physical LED data order
+is D1, D2, then D3.
 These reported pins supersede older pin assumptions for planning, but must be
 checked against the physical board before hardware changes.
+
+## Bring-up progress (2026-11-18)
+
+- Read the running controller's WLED version: 16.0.1 on ESP32. The running
+  device identity differs from the old guarded PCB flash profile. Do not
+  change that profile or flash until the target is positively identified.
+- Backed up the existing WLED configuration and presets in private session
+  storage before changing button settings. The backups are not in the repo;
+  separately confirm recovery of Wi-Fi credentials before any reflash.
+- Confirmed both LED outputs and left their configuration and existing
+  12,200 mA WLED current limit unchanged. That setting is not a new assessment
+  of the power supply or wiring.
+- The owner confirmed external button pull-ups and an AHT20 on GPIO21 (SDA)
+  and GPIO22 (SCL). Electrical values and sensor readings remain unverified
+  in WLED.
+- Configured active-low pushbuttons and presets 1-4 for brightness down
+  (`A=~-10`), brightness up (`A=~10`), next effect (`FX=~`), and power
+  toggle (`T=2`). Kept the existing GPIO0 recovery button.
+- The + button, mode button and power button produced the expected WLED state
+  changes during physical testing. The - preset worked when invoked directly,
+  but repeated physical - presses did not reliably change brightness. Check
+  GPIO34 wiring, bias and switch behavior before treating it as validated.
+- The installed build has AudioReactive but it is disabled. Neither AHT20 nor
+  independent indicator behavior is configured yet.
+- The WLED 16.0.1 PWM fan usermod requires the Dallas Temperature or SHT
+  usermod at compile time; it does not directly consume the AHT10/AHT20
+  usermod. Fan integration therefore needs an adapter or another approach,
+  after the fan hardware and safe behavior are verified.
 
 ## 1. Capture the working baseline
 
@@ -46,8 +76,7 @@ checked against the physical board before hardware changes.
   ESP32, GPIO34, GPIO36 and GPIO39 have no internal pull-ups; confirm external
   pull-ups and voltage compatibility before relying on them.
 - Configure the button pins and use WLED presets/macros for brightness down,
-  brightness up, mode and power. Confirm the actions and intended press
-  behavior with the owner before saving. WLED button 0 has long-hold access
+  brightness up, mode and power. WLED button 0 has long-hold access
   point and factory-reset functions; take care during testing.
 - Validate app control and each button repeatedly without breaking the main
   output or changing its current-limit configuration.
@@ -62,8 +91,8 @@ checked against the physical board before hardware changes.
   usermod must not drive the same pin simultaneously. Define the migration
   and rollback of the existing three-pixel output before changing it.
 - D1 indicates controller operation after the firmware starts; D2 indicates
-  Wi-Fi connection state. Agree on D3 warning triggers, colors and behavior
-  before implementation. Define sensible startup and fault behavior.
+  Wi-Fi connection state; D3 indicates a missing or failed temperature sensor.
+  Agree on colors and define sensible startup and fault behavior.
 - Validate all three indicators across boot, Wi-Fi disconnect/reconnect, main
   LED on/off, brightness changes, effects and a simulated agreed warning.
   Verify that GPIO12's ESP32 boot-strapping role does not prevent reliable
@@ -73,9 +102,8 @@ checked against the physical board before hardware changes.
 
 - Evaluate the upstream AHT10 usermod with its AHT20 option, and include it
   in a compatible custom WLED build if the installed firmware lacks it.
-- Evaluate the upstream PWM fan usermod against the verified fan circuitry.
-  Check whether it can consume AHT20 readings; its documentation mentions
-  other temperature usermods, so compatibility must not be assumed.
+- Evaluate a fan control approach against the verified fan circuitry. The
+  upstream PWM fan usermod does not directly consume AHT20 readings.
 - Agree on safe fan thresholds and a fail-safe for missing or stale sensor
   readings before enabling automatic control. Bench-test the driver and
   failure behavior before relying on it for cooling.
