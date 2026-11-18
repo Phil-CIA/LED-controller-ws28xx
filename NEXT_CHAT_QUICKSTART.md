@@ -1,36 +1,34 @@
-# Next Chat Quick Start - Rev B Pre-Route Execution
+# Next Chat Quick Start - Rev B Working Board
 
 Primary tracker document: `REV_B_CHANGE_TRACKER.md` (living document, continuously updated)
 
-## Goal for next chat
-Complete the Rev B schematic pre-route gate, then start the first must-have board changes.
+## Current status and goal
+The Rev B board is available and working, as confirmed by the project owner on 2026-11-18. The specific functions and tests covered by that confirmation have not yet been recorded.
 
-## Paste this at the start of the next chat
-Use this workspace to execute Rev B pre-route gates first, then begin layout must-haves.
+Use the tracker to choose and execute the next change on the working board. Record its validation evidence before closing the item. Do not treat the old pre-route checklist as a prerequisite to operating the assembled board; its open schematic items remain relevant before related schematic changes or future board work.
 
 Known validated state:
 - PCB target identity locked and guarded upload working on COM6
 - External strip path validated on GPIO18
 - Onboard 3-LED path validated on GPIO19
 - AHT20 validated on I2C: SDA GPIO21, SCL GPIO22, device at address 0x38
-- Switches currently unreliable due to hardware biasing limits on GPIO34/35/36/39
+- Earlier reports found switches unreliable due to hardware biasing limits on GPIO34/35/36/39; retest on the current board before relying on this status.
 
-Pre-route findings already identified:
+Open schematic findings for future schematic changes or board work:
 - Rev B mic path is implemented as U2 INMP441 with Set A GPIO mapping.
 - One true ERC blocker remains on GPIO33 (input-not-driven).
 - Mic VDD decision is still open (+5V_CTRL vs +3.3V).
 - Mic naming/docs mismatch is still open.
 
 Please execute in this order:
-1. Close the GPIO33 ERC blocker (fix or explicit waiver with rationale).
-2. Lock mic VDD rail decision and apply schematic update if needed.
-3. Resolve mic naming/docs mismatch and ensure optional or DNI intent is explicit.
-4. Regenerate Rev B ERC and DRC artifacts.
-5. If gate passes, start RB-001 and RB-007 before broader reroute.
+1. Confirm which tracker item is the next priority.
+2. Before changing the design, check whether any open schematic items affect that change.
+3. Implement and validate the selected change against its tracker gate.
+4. Update the tracker and handoff with the exact change and evidence.
 
 Then update:
-- REV_B_CHANGE_TRACKER status fields for completed pre-route items.
-- HANDOFF with exact decisions and artifact filenames.
+- `REV_B_CHANGE_TRACKER.md` with status and validation evidence for completed items.
+- `HANDOFF.md` with exact decisions, tests, and artifact filenames.
 
 ## Current source of truth
 - HANDOFF: HANDOFF.md
@@ -41,7 +39,9 @@ Then update:
 - Guarded flash flow: scripts/guarded-flash.ps1
 - Target identity config: scripts/flash-targets.json
 
-## First implementation block (after pre-route gate)
+## Candidate implementation items
+Select the next item with the project owner; the list below is not an automatic sequence.
+
 ### Hardware and layout must-haves
 - RB-001: add external pull-up network for switch lines GPIO34/35/36/39.
 - RB-007: correct onboard LED serial chain first-LED orientation (DIN path).

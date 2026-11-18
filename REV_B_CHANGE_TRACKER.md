@@ -22,10 +22,13 @@ Policy:
 - Avoid COM port shopping and stop on target mismatch.
 
 ## Current Known-Good Validation Baseline
+- Rev B board is available and working, as confirmed by the project owner on 2026-11-18. Specific functions and test coverage are not yet recorded; this does not by itself close individual tracker items.
 - External strip path validated on GPIO18.
 - Onboard 3-LED path validated on GPIO19.
 - AHT20 validated on I2C SDA GPIO21 and SCL GPIO22 at address 0x38.
 - Guarded upload working for PCB target on COM6.
+
+The pre-route items RB-011 through RB-013 remain open for schematic changes and future board work. They are not a blocker to using the current working Rev B board. Keep other items open until their individual validation gates are recorded.
 
 ## Active Issue and Change Register
 
@@ -72,6 +75,7 @@ Use this section to record decisions that freeze scope.
 |---|---|
 | 2026-06-24 | Initialized living Rev B tracker with known baseline and newly requested changes. |
 | 2026-06-29 | Added explicit pre-route gate items RB-011 through RB-013 for Rev B mic/ERC closeout before routing. |
+| 2026-11-18 | Recorded owner confirmation that the Rev B board is working; detailed test coverage remains to be documented, so individual change items stay open. |
 
 ## Update Rules
 When adding or changing an item:

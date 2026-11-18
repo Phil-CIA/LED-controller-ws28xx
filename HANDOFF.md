@@ -1,6 +1,14 @@
 # My LED Controller Handoff
 
-## Current state
+## Current project status (2026-11-18)
+- The Rev B board is available and working, as confirmed by the project owner.
+- The specific functions and tests covered by that confirmation have not yet been recorded. Do not infer that every change-tracker validation gate has passed.
+- The pre-route checklist below is historical for the current assembled board. Its open schematic items remain relevant before making those changes or preparing another board, but are not a blocker to using the working Rev B board.
+- Continue with `REV_B_CHANGE_TRACKER.md` as the active change register, closing items only when their stated validation gate is documented.
+
+## Breadboard bring-up reference
+The details below describe the earlier breadboard setup and are retained for reference; verify them before applying them to Rev B.
+
 Standalone WS281x bring-up project for an ESP32 board on COM5.
 
 Breadboard unit status:
