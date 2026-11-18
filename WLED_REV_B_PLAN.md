@@ -46,15 +46,44 @@ checked against the physical board before hardware changes.
   (`A=~-10`), brightness up (`A=~10`), next effect (`FX=~`), and power
   toggle (`T=2`). Kept the existing GPIO0 recovery button.
 - The + button, mode button and power button produced the expected WLED state
-  changes during physical testing. The - preset worked when invoked directly,
-  but repeated physical - presses did not reliably change brightness. Check
-  GPIO34 wiring, bias and switch behavior before treating it as validated.
+  changes during physical testing. The - preset worked when invoked directly;
+  physical tests were initially inconsistent. The owner confirmed GPIO34 goes
+  low when pressed, returns to approximately 3.3 V when released, and that
+  the - button works after the settings were restored.
+- After an owner-initiated restart, the button assignments initially reverted
+  while the presets remained. Restored the assignments, verified them in
+  WLED's saved configuration, and confirmed they survived a second restart.
 - The installed build has AudioReactive but it is disabled. Neither AHT20 nor
   independent indicator behavior is configured yet.
 - The WLED 16.0.1 PWM fan usermod requires the Dallas Temperature or SHT
   usermod at compile time; it does not directly consume the AHT10/AHT20
   usermod. Fan integration therefore needs an adapter or another approach,
   after the fan hardware and safe behavior are verified.
+
+## WLED AHT20 build profile
+
+`wled\platformio_override.ini` adds the upstream AHT10/AHT20 usermod to
+WLED's `esp32dev` build while retaining its audio-reactive usermod. It does
+not include the independent status indicators or fan control.
+
+Build against WLED **v16.0.1**, commit
+`29b389df1c1aaec6ff53aea742d17063b985906c`, in a separate WLED checkout.
+PlatformIO and Node.js/npm must be available on the build machine.
+
+1. Copy `wled\platformio_override.ini` from this repository into that
+   checkout as `platformio_override.ini`.
+2. From the WLED checkout, run `platformio run -e rev_b_aht20`.
+3. Before any upload, confirm the actual ESP32 flash layout and board
+   identity, keep the backup and recovery path available, and obtain approval.
+
+After an approved upload, configure WLED's I2C SDA/SCL as GPIO21/22 and the
+AHTxx usermod for AHT20 at address 56 (`0x38`). Confirm live readings and
+error behavior before relying on them. Do not enable the microphone without
+first verifying its type and supply.
+
+The profile built successfully against the pinned source with both AHT10
+and AudioReactive included. It has not been flashed or tested on the board;
+the build alone does not establish flash-layout or configuration compatibility.
 
 ## 1. Capture the working baseline
 
