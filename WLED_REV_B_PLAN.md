@@ -149,6 +149,31 @@ the build alone does not establish flash-layout or configuration compatibility.
   low-voltage supply. Do not enable or connect it until the module and rail
   are confirmed safe.
 
+### Agreed provisional fan behavior
+
+The owner accepted the following starting settings and deferred hardware
+testing. These are planned behavior, not implemented or validated cooling
+limits. Do not flash, enable fan control, or run hardware tests at this stage.
+
+| AHT20 temperature | Fan duty |
+| --- | --- |
+| Below 30 C | Off |
+| 30 C to below 35 C | 40% |
+| 35 C to below 40 C | 60% |
+| 40 C to below 45 C | 80% |
+| 45 C or higher | 100% |
+
+Read the sensor every five seconds. Require a 2 C drop below a boundary
+before stepping down across it. When starting from off, command full power
+for one second before applying the requested duty. Missing or failed readings,
+or no fresh reading for 30 seconds, command 100%. Fan control must remain
+independent of main LED power and brightness.
+
+Adapt the upstream PWM fan usermod to consume AHT20 readings with explicit
+validity and freshness information. The owner reports a three-wire fan;
+its exact pin functions, supply-PWM compatibility, PWM frequency, minimum
+reliable duty, and the sensor's placement remain to be verified before use.
+
 ## 5. Build, deploy and validate
 
 - Select and pin a compatible WLED release and document the usermods and build
