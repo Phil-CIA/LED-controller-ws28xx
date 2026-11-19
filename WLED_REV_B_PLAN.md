@@ -150,11 +150,39 @@ functions disabled. Both original LED outputs, all button assignments and
 presets 1-4 matched the preflash backup. This checks saved configuration and
 network access, not a new physical button or cooling test.
 
-GPIO12 remains an ordinary WLED output. Sensor/indicator activation and
-the GPIO12 migration below have not been performed. The fan and microphone
-remain disabled; fan PWM frequency is still unset.
+At the end of the initial upload, GPIO12 was still an ordinary WLED output.
+The separately approved activation below subsequently migrated it. The fan
+and microphone remain disabled; fan PWM frequency is still unset.
 
-### Future activation and rollback
+### Sensor and indicator activation (2026-11-19)
+
+The owner requested enabling the new functions. Saved fresh private
+configuration, presets, runtime state and info backups before changing them.
+Kept the fan disabled because the actual fan's voltage, power-PWM
+compatibility and operating frequency remain unverified.
+
+With the indicators still disabled, removed only the ordinary three-pixel
+GPIO12 output, configured WLED I2C SDA/SCL as GPIO21/22, saved and rebooted.
+The GPIO16 output retained its exact 50-pixel configuration. WLED resized
+the main segment from 0-52 to 0-49; presets 1-4 contain button commands,
+not saved segment extents, and were unchanged.
+
+Enabled `sensor-enabled` and `indicators-enabled` through Usermod Settings,
+keeping brightness 16, `fan-enabled` false and `fan-pwm-Hz` 0. A further
+reboot confirmed the settings persisted, the same controller returned,
+and uptime increased normally. WLED Info reports the sensor as `Healthy`
+and indicators as `Active: D1 power, D2 Wi-Fi, D3 status`. Button assignments,
+presets and the main output matched the preactivation backup.
+
+Successive temperature samples were approximately 34.7 C. Humidity repeatedly
+reported 99.99991%, including after reboot; this saturated reading requires
+investigation before treating humidity as accurate. `Healthy` indicates
+successful protocol/range checks, not independent measurement validation.
+Expected indicator colors are D1 green, D2 blue while connected and D3 off
+while the sensor is healthy. Their physical colors, button operation,
+animation responsiveness and cooling have not been newly bench-verified.
+
+### Activation procedure and rollback
 
 The initial upload does not authorize fan hardware tests. Before any further
 separately approved upload, positively identify the ESP32 and its flash/OTA
