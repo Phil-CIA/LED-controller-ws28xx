@@ -2,6 +2,22 @@
 
 Standalone ESP32 + WS281x project.
 
+**Setting up a Rev B board? [Start here: Rev B WLED Quick Start](REV_B_QUICK_START.md).**
+It covers first install, configuration upload, and phone control with or without a router.
+
+## Developer and legacy notes
+
+For the current WLED-based Rev B direction and reported board pinout, see
+[`WLED_REV_B_PLAN.md`](WLED_REV_B_PLAN.md). The hardware and firmware settings
+below describe the earlier bring-up configuration and may differ from the
+working board.
+
+The Rev B WLED integration is in `wled\usermods\RevBController`;
+`wled\platformio_override.ini` provides its `rev_b_controller` build profile.
+See the plan for the pinned WLED source, build instructions, disabled-by-default
+hardware features, and future migration/rollback. D1 is power, D2 Wi-Fi, and
+D3 status; the assembled board's power/status silkscreens are reversed.
+
 This repo now supports two firmware paths:
 - custom firmware in `src/main.cpp` (serial-driven tests and demo)
 - official WLED firmware (Wi-Fi + WLED app control)
@@ -37,7 +53,7 @@ Before first guarded flash on a target, pin its immutable MAC:
 
 If `expectedMac` is empty for a target, guarded upload refuses to flash.
 
-## WLED quick start (Wi-Fi + app)
+## Legacy WLED quick start (not for the current Rev B setup)
 1. Set active target profile first (`breadboard` or `pcb`).
 2. Use the official installer at `https://install.wled.me` (ESP32 target).
 3. Select the target COM port and complete flashing through the installer UI.
