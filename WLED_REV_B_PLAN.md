@@ -175,8 +175,8 @@ and indicators as `Active: D1 power, D2 Wi-Fi, D3 status`. Button assignments,
 presets and the main output matched the preactivation backup.
 
 Successive temperature samples were approximately 34.7 C. Humidity repeatedly
-reported 99.99991%, including after reboot; this saturated reading requires
-investigation before treating humidity as accurate. `Healthy` indicates
+reported 99.99991%, including after reboot; investigation is deferred to
+[#3](https://github.com/Phil-CIA/LED-controller-ws28xx/issues/3). `Healthy` indicates
 successful protocol/range checks, not independent measurement validation.
 Expected indicator colors are D1 green, D2 blue while connected and D3 off
 while the sensor is healthy. Their physical colors, button operation,

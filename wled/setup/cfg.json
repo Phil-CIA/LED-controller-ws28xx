@@ -1,0 +1,55 @@
+{
+  "rev": [1, 0],
+  "ap": {
+    "behav": 2
+  },
+  "hw": {
+    "led": {
+      "total": 50,
+      "maxpwr": 1000,
+      "ic": false,
+      "ins": [
+        {
+          "start": 0,
+          "len": 50,
+          "pin": [16],
+          "order": 1,
+          "type": 22,
+          "ledma": 55,
+          "maxpwr": 0
+        }
+      ]
+    },
+    "btn": {
+      "pull": true,
+      "ins": [
+        { "type": 2, "pin": [0], "macros": [0, 0, 0] },
+        { "type": 2, "pin": [34], "macros": [1, 0, 0] },
+        { "type": 2, "pin": [25], "macros": [2, 0, 0] },
+        { "type": 2, "pin": [36], "macros": [3, 0, 0] },
+        { "type": 2, "pin": [39], "macros": [4, 0, 0] }
+      ]
+    },
+    "if": {
+      "i2c-pin": [21, 22],
+      "spi-pin": [-1, -1, -1]
+    }
+  },
+  "def": {
+    "ps": 0,
+    "on": false,
+    "bri": 32
+  },
+  "um": {
+    "AudioReactive": {
+      "enabled": false
+    },
+    "RevBController": {
+      "sensor-enabled": false,
+      "indicators-enabled": false,
+      "fan-enabled": false,
+      "indicator-brightness": 16,
+      "fan-pwm-Hz": 0
+    }
+  }
+}

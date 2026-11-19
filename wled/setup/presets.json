@@ -1,0 +1,7 @@
+{
+  "0": {},
+  "1": { "n": "Button brightness down", "win": "A=~-10" },
+  "2": { "n": "Button brightness up", "win": "A=~10" },
+  "3": { "n": "Button next effect", "win": "FX=~" },
+  "4": { "n": "Button power toggle", "win": "T=2" }
+}
