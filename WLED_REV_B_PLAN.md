@@ -22,9 +22,10 @@ Reported by the owner from the running WLED device:
 
 The owner wants the onboard indicators to remain active when the main LEDs
 are off: D1 for controller power, D2 for Wi-Fi, and D3 for a general fault or
-warning. D3 should indicate a missing or failed temperature sensor; indicator
-colors are not yet decided. The owner confirmed the physical LED data order
-is D1, D2, then D3.
+warning. D3 should indicate a missing or failed temperature sensor. The owner
+confirmed the physical LED data order is D1, D2, then D3, and that the board's
+power/status silkscreens are reversed. Follow the component references and
+chain order, not those two printed labels.
 These reported pins supersede older pin assumptions for planning, but must be
 checked against the physical board before hardware changes.
 
@@ -67,7 +68,154 @@ checked against the physical board before hardware changes.
   identifies Q2 as an AO3400A rated at 30 V; check voltage transients and
   driver margins, especially with a 24 V supply.
 
-## WLED AHT20 build profile
+## Offline firmware implementation
+
+`wled\usermods\RevBController` implements shared AHT20 health, the agreed
+fan curve and independent status pixels without changing WLED core.
+All three functions default **disabled**. Building does not change the
+running controller, its outputs, buttons, presets or flash-target profiles.
+
+The stock PWM fan usermod only accepts Dallas/SHT readings; the stock AHT10
+usermod keeps its last successful reading and timestamp private. Rather than
+coupling to its debug JSON or maintaining patches to both usermods, the
+board module reuses the maintained AHTxx sensor library (pinned in
+`library.json`), including AHT20 CRC and busy/error checks. It uses WLED's
+GPIO/LEDC allocation APIs for the same kind of PWM output as the stock fan
+usermod. It must not be built alongside AHT10 or PWM_fan.
+
+The indicator driver uses WLED's existing NeoPixelBus dependency, with a
+software output for just three pixels. This avoids taking an untracked
+RMT/I2S channel that WLED could reuse when its outputs are reconfigured.
+GPIO12 is exclusively allocated through WLED's pin manager; an existing
+output on that pin is reported as a conflict, never removed automatically.
+The indicator output uses GRB byte order, matching WLED v16.0.1's
+color-order value 0 in the current GPIO12 configuration, and is outside
+WLED's effects, master brightness and current limiter. Default channel
+brightness is 16/255, with a configurable cap of 64.
+
+| Component | Initial display after enabling indicators |
+| --- | --- |
+| D1 power | Green whenever the module is running |
+| D2 Wi-Fi | Blue when connected; blinking amber when disconnected/AP-only |
+| D3 status | Amber before the first reading; off when healthy; red on disabled, failed or stale sensor, or fan initialization failure |
+
+These are firmware color defaults, not hardware-verified colors. They can
+only be displayed after firmware starts and while the pixels have power.
+
+### Build the combined firmware (no upload)
+
+Use PlatformIO and Node.js/npm on the build machine, and a **separate** WLED
+checkout pinned to v16.0.1, commit
+`29b389df1c1aaec6ff53aea742d17063b985906c`.
+
+1. Copy `wled\platformio_override.ini` into the WLED checkout root. Preserve
+   any unrelated existing override rather than overwriting it.
+2. Copy the complete `wled\usermods\RevBController` directory into that
+   checkout's `usermods` directory.
+3. From the WLED checkout, run `platformio run -e rev_b_controller`.
+4. The application image is `.pio\build\rev_b_controller\firmware.bin`.
+   It is not a merged factory image. A successful build does not verify the
+   connected ESP32's identity, partition layout or configuration compatibility.
+
+The combined profile built successfully on 2026-11-19: 1,304,673 bytes of
+program flash in the selected 1,572,864-byte application partition, and
+81,640 bytes of static RAM. A local copy of that 1,311,360-byte application
+image is `.pio\wled-revb\WLED_16.0.1_RevBController.bin` in this project
+workspace (ignored by Git). Its SHA-256 is
+`688069779f9b9a035713644eb92b0ee9759c531a2483ba6f0d4bf1337004b755`.
+These are build results, not compatibility or hardware-test results.
+
+The combined profile retains AudioReactive but defaults its input pins/type
+to unassigned. Existing saved settings still take precedence; do not enable
+the microphone until its interface and supply have been verified.
+
+### Future activation and rollback (not authorized yet)
+
+Do not flash, change settings on the live board, or run fan hardware tests
+as part of this offline work. Before a separately approved upload, positively
+identify the ESP32 and its flash/OTA partition layout, verify the image fits,
+save current configuration and presets privately, and separately establish
+recovery of Wi-Fi credentials and a known-good firmware image. The old
+`pcb` and `breadboard` identity profiles are not verified for this controller.
+
+After an approved, compatible upload, the WLED Usermods page exposes:
+
+| RevBController setting | Default | Meaning |
+| --- | --- | --- |
+| `sensor-enabled` | false | Read AHT20 at `0x38` using WLED's I2C bus |
+| `indicators-enabled` | false | Own the three GPIO12 pixels |
+| `fan-enabled` | false | Enable automatic GPIO23 PWM |
+| `indicator-brightness` | 16 | Per-channel brightness, accepted range 0-64 |
+| `fan-pwm-Hz` | 0 | Unset: fan refuses to start until a verified frequency between 20 and 25000 Hz is supplied |
+
+For sensor activation, set WLED's I2C SDA/SCL to GPIO21/22 and reboot before
+enabling `sensor-enabled`. The module only accesses an already initialized
+WLED-owned bus on those pins; it does not reassign pins or restart Wire.
+It retries failed sensor initialization/readings every five seconds.
+The reused sensor library performs bounded blocking conversions (about 80 ms
+normally), so animation responsiveness during readings still needs a bench
+check. Missed reads during strip updates eventually trigger the stale
+fail-safe rather than treating an old sample as fresh.
+
+For indicator migration, record the existing GPIO12 output (three WS2812
+pixels, start 50, GRB/color-order value 0) and segment/preset configuration
+first. Keep GPIO16 and its 50 LEDs unchanged. With indicators still disabled,
+remove only the ordinary GPIO12 output, save and reboot. Then enable
+`indicators-enabled` and save. Check the WLED Info panel for pin conflicts
+and health; never configure another GPIO12 output while the module owns it.
+Main segments should cover only LEDs 0-49; review saved presets that used
+the former 53-pixel layout.
+
+Leave the fan disabled until its voltage, pin functions and power-PWM
+compatibility are verified and a bench session is approved. No PWM frequency
+is assumed for the three-wire example. The module reserves a whole LEDC
+timer pair and reports pin, timer or frequency setup failures in WLED Info.
+If enabled successfully, it commands full power until a valid reading is
+available, on failed/stale/disabled sensor data, and during firmware updates.
+Disabling the module's fan setting explicitly stops its output; this is not
+a fail-safe and must not be used while relying on the fan for cooling.
+There is no tachometer feedback or stall detection.
+
+For rollback, disable `fan-enabled` and `indicators-enabled`, save, and reboot
+to release their pins. Recreate only the original GPIO12 output and restore
+the saved segment/preset layout if needed. If firmware rollback is necessary,
+use the previously verified compatible image and recovery method, then
+restore the private configuration/presets. A full erase requires a separate
+credential recovery path; never assume the application `.bin` is suitable
+for an arbitrary flash address.
+
+### Offline policy checks
+
+From this repository root, compile and run
+`wled\tests\rev_b_policy_test.cpp` with a host C++11 compiler; these checks
+do not communicate with a board. For example, with Zig installed:
+
+```powershell
+zig c++ -std=c++11 -Wall -Wextra -Werror wled\tests\rev_b_policy_test.cpp -o "$env:TEMP\rev_b_policy_test.exe"
+if ($LASTEXITCODE -eq 0) { & "$env:TEMP\rev_b_policy_test.exe" }
+```
+
+The checks cover the actual curve boundaries, downward hysteresis, start
+kick, failed/invalid/stale data, recovery, millisecond rollover and the
+D1/D2/D3 mapping.
+
+The second executable tests the actual usermod against simulated pins, PWM,
+pixels and sensor responses. It uses the pinned WLED checkout's bundled
+ArduinoJson header:
+
+```powershell
+$wled = "C:\wled-revb" # Your separate pinned WLED checkout.
+zig c++ -std=c++11 -Wall -Wextra -Werror -I wled\tests\fakes -I "$wled\wled00\src\dependencies\json" wled\tests\rev_b_controller_test.cpp -o "$env:TEMP\rev_b_controller_test.exe"
+if ($LASTEXITCODE -eq 0) { & "$env:TEMP\rev_b_controller_test.exe" }
+```
+
+Both offline executables passed on 2026-11-19, including disabled defaults,
+GPIO conflicts, allocation failures, initialization/read failures, stale
+data during strip updates, recovery, update fail-safe and pin release.
+No actual device is involved in these checks. Hardware validation remains
+deferred.
+
+## Earlier AHT20-only build profile
 
 `wled\platformio_override.ini` adds the upstream AHT10/AHT20 usermod to
 WLED's `esp32dev` build while retaining its audio-reactive usermod. It does
@@ -152,8 +300,9 @@ the build alone does not establish flash-layout or configuration compatibility.
 ### Agreed provisional fan behavior
 
 The owner accepted the following starting settings and deferred hardware
-testing. These are planned behavior, not implemented or validated cooling
-limits. Do not flash, enable fan control, or run hardware tests at this stage.
+testing. They are implemented in the opt-in board module, but are not
+validated cooling limits. Do not flash, enable fan control, or run hardware
+tests at this stage.
 
 | AHT20 temperature | Fan duty |
 | --- | --- |
@@ -169,8 +318,9 @@ for one second before applying the requested duty. Missing or failed readings,
 or no fresh reading for 30 seconds, command 100%. Fan control must remain
 independent of main LED power and brightness.
 
-Adapt the upstream PWM fan usermod to consume AHT20 readings with explicit
-validity and freshness information. The owner reports a three-wire fan;
+The board module uses AHT20 readings with explicit validity and freshness
+information rather than the stock fan usermod's Dallas/SHT interface. The
+owner reports a three-wire fan;
 its exact pin functions, supply-PWM compatibility, PWM frequency, minimum
 reliable duty, and the sensor's placement remain to be verified before use.
 
