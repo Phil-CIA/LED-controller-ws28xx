@@ -59,6 +59,13 @@ checked against the physical board before hardware changes.
   usermod at compile time; it does not directly consume the AHT10/AHT20
   usermod. Fan integration therefore needs an adapter or another approach,
   after the fan hardware and safe behavior are verified.
+- The owner plans to use 5 V, 12 V, or 24 V board supplies and select a fan
+  rated for the supply. The historical Rev B netlist shows a two-pin fan
+  connector with one side on `VIN_CLAMPED` and the other switched to ground
+  by GPIO23 through Q2. Verify the assembled board and fan before use: PWM
+  switches the supply and does not reduce its peak voltage. The netlist
+  identifies Q2 as an AO3400A rated at 30 V; check voltage transients and
+  driver margins, especially with a 24 V supply.
 
 ## WLED AHT20 build profile
 
