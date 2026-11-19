@@ -3,8 +3,9 @@
 ## Goal
 
 Keep WLED and its app as the primary controller. Reuse built-in features and
-existing usermods before adding board-specific code. This plan does not
-authorize flashing or changing the running board.
+existing usermods before adding board-specific code. The owner separately
+approved the initial OTA upload recorded below; this plan is not blanket
+authorization for further flashing, output changes or fan hardware tests.
 
 ## Current board information
 
@@ -129,16 +130,40 @@ The combined profile retains AudioReactive but defaults its input pins/type
 to unassigned. Existing saved settings still take precedence; do not enable
 the microphone until its interface and supply have been verified.
 
-### Future activation and rollback (not authorized yet)
+### Initial OTA deployment (2026-11-19)
 
-Do not flash, change settings on the live board, or run fan hardware tests
-as part of this offline work. Before a separately approved upload, positively
-identify the ESP32 and its flash/OTA partition layout, verify the image fits,
+The owner requested flashing and confirmed USB access and Wi-Fi credentials
+for recovery. Matched the saved `wled-c9df3c` device identity to the live
+classic ESP32, MAC `78:1C:3C:C9:DF:3C`, with 4 MB flash and the `ESP32`
+release. Saved fresh private configuration, presets, runtime state and info
+backups. Downloaded the matching official recovery application image and
+verified its release SHA-256; this is not a dump of the original flash.
+
+Uploaded the application image identified above through WLED's `/update`
+endpoint, with firmware validation enabled. WLED reported a successful
+update and rebooted. No raw-address writes, erase, partition/bootloader
+changes, USB profile changes or validation bypass were used.
+
+Confirmed the same MAC after reboot, WLED 16.0.1, the new Rev B Info entries,
+increasing uptime, and saved RevBController settings with all three
+functions disabled. Both original LED outputs, all button assignments and
+presets 1-4 matched the preflash backup. This checks saved configuration and
+network access, not a new physical button or cooling test.
+
+GPIO12 remains an ordinary WLED output. Sensor/indicator activation and
+the GPIO12 migration below have not been performed. The fan and microphone
+remain disabled; fan PWM frequency is still unset.
+
+### Future activation and rollback
+
+The initial upload does not authorize fan hardware tests. Before any further
+separately approved upload, positively identify the ESP32 and its flash/OTA
+partition layout, verify the image fits,
 save current configuration and presets privately, and separately establish
 recovery of Wi-Fi credentials and a known-good firmware image. The old
 `pcb` and `breadboard` identity profiles are not verified for this controller.
 
-After an approved, compatible upload, the WLED Usermods page exposes:
+The installed firmware's WLED Usermods page exposes:
 
 | RevBController setting | Default | Meaning |
 | --- | --- | --- |
@@ -301,8 +326,8 @@ the build alone does not establish flash-layout or configuration compatibility.
 
 The owner accepted the following starting settings and deferred hardware
 testing. They are implemented in the opt-in board module, but are not
-validated cooling limits. Do not flash, enable fan control, or run hardware
-tests at this stage.
+validated cooling limits. Do not enable fan control or run fan hardware tests
+until a separate bench session is approved and the fan is verified.
 
 | AHT20 temperature | Fan duty |
 | --- | --- |

@@ -7,7 +7,7 @@ For the current WLED-based Rev B direction and reported board pinout, see
 below describe the earlier bring-up configuration and may differ from the
 working board.
 
-The offline Rev B WLED integration is in `wled\usermods\RevBController`;
+The Rev B WLED integration is in `wled\usermods\RevBController`;
 `wled\platformio_override.ini` provides its `rev_b_controller` build profile.
 See the plan for the pinned WLED source, build instructions, disabled-by-default
 hardware features, and future migration/rollback. D1 is power, D2 Wi-Fi, and
